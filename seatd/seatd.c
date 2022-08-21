@@ -19,7 +19,7 @@
 
 static int open_socket(const char *path, int uid, int gid) {
 	union {
-		struct sockaddr_un unix;
+		struct sockaddr_un _unix;
 		struct sockaddr generic;
 	} addr = {{0}};
 	int fd = socket(AF_UNIX, SOCK_STREAM | SOCK_NONBLOCK | SOCK_CLOEXEC, 0);
@@ -28,9 +28,9 @@ static int open_socket(const char *path, int uid, int gid) {
 		return -1;
 	}
 
-	addr.unix.sun_family = AF_UNIX;
-	strncpy(addr.unix.sun_path, path, sizeof addr.unix.sun_path - 1);
-	socklen_t size = offsetof(struct sockaddr_un, sun_path) + strlen(addr.unix.sun_path);
+	addr._unix.sun_family = AF_UNIX;
+	strncpy(addr._unix.sun_path, path, sizeof addr._unix.sun_path - 1);
+	socklen_t size = offsetof(struct sockaddr_un, sun_path) + strlen(addr._unix.sun_path);
 	if (bind(fd, &addr.generic, size) == -1) {
 		log_errorf("Could not bind socket: %s", strerror(errno));
 		goto error;

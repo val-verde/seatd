@@ -55,7 +55,7 @@ static int set_nonblock(int fd) {
 
 static int seatd_connect(void) {
 	union {
-		struct sockaddr_un unix;
+		struct sockaddr_un _unix;
 		struct sockaddr generic;
 	} addr = {{0}};
 	int fd = socket(AF_UNIX, SOCK_STREAM, 0);
@@ -72,9 +72,9 @@ static int seatd_connect(void) {
 	if (path == NULL) {
 		path = SEATD_DEFAULTPATH;
 	}
-	addr.unix.sun_family = AF_UNIX;
-	strncpy(addr.unix.sun_path, path, sizeof addr.unix.sun_path - 1);
-	socklen_t size = offsetof(struct sockaddr_un, sun_path) + strlen(addr.unix.sun_path);
+	addr._unix.sun_family = AF_UNIX;
+	strncpy(addr._unix.sun_path, path, sizeof addr._unix.sun_path - 1);
+	socklen_t size = offsetof(struct sockaddr_un, sun_path) + strlen(addr._unix.sun_path);
 	if (connect(fd, &addr.generic, size) == -1) {
 		if (errno == ENOENT) {
 			log_infof("Could not connect to socket %s: %s", path, strerror(errno));
